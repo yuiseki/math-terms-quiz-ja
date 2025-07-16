@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { QuizMode, TermTag, QuizResult } from './types';
 import { useStats } from './hooks/useStats';
-import { useQuiz } from './hooks/useQuiz';
 import { Home } from './pages/Home';
 import { Quiz } from './pages/Quiz';
 import { Summary } from './pages/Summary';
@@ -16,7 +15,7 @@ function App() {
   const [selectedTags, setSelectedTags] = useState<TermTag[]>([]);
   const [quizResults, setQuizResults] = useState<QuizResult[]>([]);
   
-  const { stats, getStrugglingTerms, resetAllStats } = useStats();
+  const { getStrugglingTerms, resetAllStats } = useStats();
   const strugglingTermIds = getStrugglingTerms();
 
   const handleStartQuiz = (mode: QuizMode, tags: TermTag[] = []) => {
