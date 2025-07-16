@@ -1,6 +1,7 @@
 import { TermStats } from '../types';
 
 const STORAGE_KEY = 'math-quiz-stats-v1';
+const CORRECT_TERMS_KEY = 'math-quiz-correct-terms-v1';
 
 export const loadStats = (): Record<string, TermStats> => {
   try {
@@ -25,6 +26,28 @@ export const resetStats = (): void => {
     localStorage.removeItem(STORAGE_KEY);
   } catch (error) {
     console.error('Failed to reset stats:', error);
+  }
+};
+
+export const loadCorrectTerms = (): string[] => {
+  try {
+    const stored = localStorage.getItem(CORRECT_TERMS_KEY);
+    return stored ? JSON.parse(stored) : [];
+  } catch (error) {
+    console.error('Failed to load correct terms:', error);
+    return [];
+  }
+};
+
+export const addCorrectTerm = (termId: string): void => {
+  try {
+    const terms = loadCorrectTerms();
+    if (!terms.includes(termId)) {
+      terms.push(termId);
+      localStorage.setItem(CORRECT_TERMS_KEY, JSON.stringify(terms));
+    }
+  } catch (error) {
+    console.error('Failed to save correct term:', error);
   }
 };
 
