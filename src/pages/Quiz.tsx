@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { QuizMode, TermTag } from '../types';
+import { QuizMode, TermTag, QuizResult } from '../types';
 import { useQuiz } from '../hooks/useQuiz';
 import { useStats } from '../hooks/useStats';
+import { addCorrectTerm } from '../utils/storage';
 import { QuizCard } from '../components/QuizCard';
 import { FeedbackCard } from '../components/FeedbackCard';
 import { Progress } from '../components/Progress';
@@ -12,7 +13,7 @@ interface QuizProps {
   selectedTags?: TermTag[];
   strugglingTermIds: string[];
   onBack: () => void;
-  onComplete: () => void;
+  onComplete: (results: QuizResult[]) => void;
 }
 
 export const Quiz: React.FC<QuizProps> = ({
@@ -33,7 +34,8 @@ export const Quiz: React.FC<QuizProps> = ({
     submitAnswer,
     nextQuestion,
     getCurrentQuestion,
-    getProgress
+    getProgress,
+    getResults
   } = useQuiz(mode, selectedTags, strugglingTermIds);
 
   const question = getCurrentQuestion();
@@ -41,17 +43,20 @@ export const Quiz: React.FC<QuizProps> = ({
 
   const handleAnswerSelect = (answerIndex: number) => {
     if (!question || showFeedback) return;
-    
+
     submitAnswer(answerIndex);
-    
+
     // Update stats
     const isCorrect = answerIndex === question.correctIndex;
     updateStats(question.term.id, isCorrect);
+    if (isCorrect) {
+      addCorrectTerm(question.term.id);
+    }
   };
 
   const handleNext = () => {
     if (isCompleted) {
-      onComplete();
+      onComplete(getResults());
     } else {
       nextQuestion();
       setShowDetailedExplanation(false);
